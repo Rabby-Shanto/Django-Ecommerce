@@ -1,6 +1,7 @@
 from django.shortcuts import render,get_object_or_404
 from .models import Product
 from category.models import Category
+from django.http import HttpResponse
 
 # Create your views here.
 def store(request, category_slug=None):

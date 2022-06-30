@@ -1,4 +1,3 @@
-from tabnanny import verbose
 from django.db import models
 from store.models import Product
 
@@ -29,5 +28,5 @@ class Cart_item(models.Model):
         verbose_name_plural = 'Cart Items'
 
     def __str__(self):
-        return self.product
+        return self.product.product_name
 
