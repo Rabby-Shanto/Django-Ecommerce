@@ -1,14 +1,16 @@
+from django.http import HttpResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from .models import Cart,Cart_item
 
 from store.models import Product
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 
 
 
 
-def cart(request,total=0,quantity=0,cart_items=None):
+def cart(request,total=0,quantity=0,tax=0,grand_total=0,cart_items=None):
 
     try:
         cart = Cart.objects.get(cart_id = _cart_id(request))
@@ -20,7 +22,7 @@ def cart(request,total=0,quantity=0,cart_items=None):
         tax = (3 * total)/100
         grand_total = tax + total
 
-    except ObjectNotExist:
+    except ObjectDoesNotExist:
         pass
 
     context = {
@@ -46,29 +48,35 @@ def _cart_id(request):
 
 
 def add_cart(request,product_id):
-     product = Product.objects.get(id=product_id) #fetch the product base on id
-     try:
+    color = request.GET['color']
+    size = request.GET['size']
+
+    return HttpResponse(color +' '+ size)
+    exit()
+
+    product = Product.objects.get(id=product_id) #fetch the product base on id
+    try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
          #to get the cart using cart id present in session
-     except Cart.DoesNotExist:
+    except Cart.DoesNotExist:
         cart = Cart.objects.create(
             cart_id = _cart_id(request)
         )
 
-     cart.save()
+    cart.save()
 
-     try:
+    try:
         cart_item = Cart_item.objects.get(product=product, cart = cart)
         cart_item.quantity += 1
         cart_item.save()
-     except Cart_item.DoesNotExist:
+    except Cart_item.DoesNotExist:
         cart_item = Cart_item.objects.create(
             product = product,
             quantity = 1,
             cart = cart,
         )
         cart_item.save()
-     return redirect('cart')
+    return redirect('cart')
 
 
 
