@@ -18,7 +18,8 @@
     </article> <!-- gallery-wrap .end// -->
             </aside>
             <main class="col-md-6 border-left">
-    <form action="{% url 'add_cart' single_product.id %}" method="GET">
+    <form action="{% url 'add_cart' single_product.id %}" method="POST">GET
+        {% csrf_token %}
         <article class="content-body">
         
         <h2 class="title">{{single_product.product_name}}</h2>
@@ -34,11 +35,17 @@
             <div class="row">
                 <div class="item-option-select">
                     <h6>Choose Color</h6>
-                    <select name="color" class="form-control">
-                      <option value="red">Red</option>
-                      <option value="yellow">Yellow</option>
-                      <option value="blue">Blue</option>
-                      <option value="majenta">Majenta</option>
+
+                    <select name="color" class="form-control" required>
+                        <option value="" disabled selected hidden> choose color</option>
+                        <!-- fetching colors from colors function and variation_set is the variation model that is the foreign key of single_product -->
+
+                        {% for i in single_product.variation_set.colors %} 
+
+                      <option value="{{i.variation_value | lower}}">{{i.variation_value | capfirst}}</option>
+
+                        {% endfor %}
+
 
                     </select>
                 </div>
@@ -46,15 +53,17 @@
             <div class="row">
                 <div class="item-option-select">
                     <h6>Select Size</h6>
-                    <select name="size" class="form-control">
-                      <option value="s">S</option>
-                      <option value="m">M</option>
-                      <option value="l">L</option>
-                      <option value="xl">XL</option>
+                    <select name="size" class="form-control" required>
+                        <option value="" disabled selected hidden> choose size</option>
+                        {% for i in single_product.variation_set.sizes %} 
+
+                        <option value="{{i.variation_value | lower}}">{{i.variation_value | capfirst}}</option>
+  
+                          {% endfor %}
 
                     </select>
                 </div>
-            </div> <!-- row.// -->
+            </div>  <!-- row.// -->
             <hr>
             {% if single_product.stock <= 0 %}
 
