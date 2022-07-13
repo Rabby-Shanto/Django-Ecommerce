@@ -44,8 +44,8 @@ def register(request):
             to_email = email
             send_email = EmailMessage(mail_subject,message,to=[to_email])
             send_email.send()
-            messages.success(request,"Registration Successful")
-            return redirect('register')
+            # messages.success(request,"Registration Successful")
+            return redirect('/accounts/login/?command=verification&email='+email)
 
 
     else:
@@ -72,7 +72,7 @@ def login(request):
         if user is not None:
             auth.login(request,user)
             messages.success(request,'You are now logged in')
-            return redirect('home')
+            return redirect('dashboard')
 
         else:
             messages.error(request,'Invalid email or password!')
@@ -89,3 +89,34 @@ def logout(request):
     messages.success(request,"You are logged out")
 
     return redirect('login')
+
+
+
+def activate(request,uidb64,token):
+
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = UserAcc._default_manager.get(pk=uid)
+
+    except(TypeError,ValueError,OverflowError,UserAcc.DoesNotExist):
+
+        user = None
+
+    if user is not None and default_token_generator.check_token(user,token):
+        user.is_active = True
+        user.save()
+        messages.success(request,"Congrats,Your account is activated")
+
+        return redirect('login')
+    else:
+        messages.error(request,"Invalid Link!Please try again")
+
+        return redirect('register')
+
+
+
+@login_required(login_url='login')
+
+def dashboard(request):
+
+    return render(request,'accounts/dashboard.html')
