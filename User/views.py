@@ -74,19 +74,40 @@ def login(request):
 
         if user is not None:
             try:
-                print("Entering try block")
                 cart = Cart.objects.get(cart_id=_cart_id(request))
                 is_cartitem_exists = Cart_item.objects.filter(cart=cart).exists()
-                print(is_cartitem_exists)
+                # Getting the product variation
+
                 if is_cartitem_exists:
                     cart_item = Cart_item.objects.filter(cart=cart)
-                    print(cart_item)
-
+                    product_variation = []
                     for item in cart_item:
-                        item.user = user
-                        item.save()
+                        variation = item.variations.all()
+                        product_variation.append(list(variation))
+
+                        # Get the cart item from the user to access product variation
+                    cart_item = Cart_item.objects.filter(user = user)
+                    ex_variation_list = []
+                    id = []
+                    for item in cart_item:
+                        existing_variation = item.variations.all()
+                        ex_variation_list.append(list(existing_variation))
+                        id.append(item.id)
+
+                    for pr in product_variation:
+                        if pr in ex_variation_list:
+                            index = ex_variation_list.index(pr)
+                            item_id = id[index]
+                            item = Cart_item.objects.get(id=item_id)
+                            item.quantity += 1
+                            item.user=user
+                            item.save()
+                        else:
+                            cart_item = Cart_item.objects.filter(cart=cart)
+                            for item in cart_item:
+                                item.user = user
+                                item.save()
             except:
-                print("Entering Except block")
                 pass
             auth.login(request,user)
             messages.success(request,'You are now logged in')
