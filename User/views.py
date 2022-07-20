@@ -1,3 +1,4 @@
+from sqlite3 import paramstyle
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from User.models import UserAcc
@@ -15,6 +16,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 #....
 from cart.views import _cart_id
+import requests
 # Create your views here.
 
 #Registreation and Sending Email verification to user email
@@ -111,7 +113,19 @@ def login(request):
                 pass
             auth.login(request,user)
             messages.success(request,'You are now logged in')
-            return redirect('dashboard')
+            url = request.META.get('HTTP_REFERER')
+            try:
+                query = requests.utils.urlparse(url).query
+                print(query)
+                params = dict(x.split("=") for x in query.split('&'))
+                print(params)
+                if 'next' in params:
+                    next_page = params['next']
+                    return redirect(next_page)
+                
+            except:
+                
+                return redirect('dashboard')
 
         else:
             messages.error(request,'Invalid email or password!')
