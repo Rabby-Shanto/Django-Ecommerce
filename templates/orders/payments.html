@@ -9,27 +9,87 @@
 
     <div class="row">
         <aside class="col-lg-8">
-    <div class="card">
+
+          
+      <h4 class="text-danger text-center">Review your order to make payment</h4>
       <div class="card">
+        
         <h5 class="card-header">Billing Address</h5>
         <div class="card-body">
-          <p class="card-text">{{order.first_name}}</p>
+          <p class="card-text"><b>Name : </b>{{order.full_name}}</p>
+          <p class="card-text"><b>Address : </b>{{order.full_address}}</p>
+          <p class="card-text"><b>State and Country : </b>{{order.state}},{{order.country}}</p>
+          <p class="card-text"><b>Email : </b>{{order.email}}</p>
+          <p class="card-text"><b>Phone : </b>{{order.phone}}</p>
+
+          {% if order.order_note %}
+
+          <b>Order Note : </b>{{order.order_note}}
+
+          {% endif %}
         </div>
       </div>
       <div class="card">
         <h5 class="card-header">Payment Method</h5>
         <div class="card-body">
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+          <p class="card-text">Bkash,Rocket,DBBL</p>
         </div>
       </div>
       <div class="card">
         <h5 class="card-header">Review Products</h5>
         <div class="card-body">
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+          <table class="table table-borderless table-shopping-cart">
+            <thead class="text-muted text-center">
+            <tr class="small text-uppercase">
+              <th scope="col" width="300">Product</th>
+              <th scope="col" width="120">Quantity</th>
+              <th scope="col" width="120">Price</th>
+
+            </tr>
+            </thead>
+            <tbody>
+                {% for cart_item in cart_items %}
+            <tr>
+                <td>
+                    <figure class="itemside align-items-center">
+                        <div class="aside"><img src="{{cart_item.product.images.url}}" class="img-sm"></div>
+                        <figcaption class="info">
+                            <a href="{{cart_item.product.get_url}}" class="title text-dark">{{cart_item.product.product_name}}</a>
+                            <p class="text-muted small">
+        
+                                {% if cart_item.variations.all %}
+                                    {% for item in cart_item.variations.all %}
+        
+                                    {{item.variation_class | capfirst}} : {{item.variation_value | capfirst}}
+        
+                                    {% endfor %}
+        
+                                {% endif %}
+        
+                            </p>
+                        </figcaption>
+                    </figure>
+                </td>
+                <td> 
+                    <!-- col.// -->
+                                <div class="col text-center"> 
+                                <label for="" >{{cart_item.quantity}}</label>
+                                </div> <!-- col.// -->
+                </td>
+                <td> 
+                    <div class="price-wrap text-center"> 
+                        <var class="price">TK. {{cart_item.sub_total}}</var> 
+                        <small class="text-muted"> TK. {{cart_item.product.price}} each </small> 
+                    </div> <!-- price-wrap .// -->
+                </td>
+
+            </tr>
+            {% endfor %}
+            </tbody>
+            </table>
         </div>
       </div>
     
-    </div> <!-- card.// -->
     
         </aside> <!-- col.// -->
         <aside class="col-lg-4">
