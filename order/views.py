@@ -25,6 +25,30 @@ def payment(request):
     order.is_ordered = True #After payment successful,it should be true
     order.save()
 
+    # move the cart item to ordered products table
+
+    cart_item = Cart_item.objects.filter(user=request.user)
+    for item in cart_item:
+        ordered_product = OrderedProduct()
+        ordered_product.order_id = order.id
+        ordered_product.payment = payment
+        ordered_product.user_id = request.user.id
+        ordered_product.product_id = item.product_id
+        ordered_product.quantity = item.quantity
+        #variation isn't here because it is many to many field,so we can't use variation withour saving the ordered product
+        ordered_product.product_price  = item.product.price
+        ordered_product.is_ordered = True
+        ordered_product.save()
+
+        #starting to get variation 
+
+        cart_item = Cart_item.objects.get(id=item.id)
+        product_variation = cart_item.variations.all()
+        ordered_product = OrderedProduct.objects.get(id = ordered_product.id)
+        ordered_product.variations.set(product_variation)
+        ordered_product.save()
+        
+
     return render(request,'orders/payments.html')
 
 def place_order(request,total=0,quantity=0):
