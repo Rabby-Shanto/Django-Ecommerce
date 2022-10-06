@@ -145,7 +145,8 @@
       var amount = "{{grand_total}}"
       var url = "{% url 'payments' %}"
       var csrftoken = getCookie('csrftoken');
-      var orderID = "{{order.order_number}}"
+      var orderID = "{{order.order_number}}";
+      var redirected_url = "{% url 'order_complete' %}";
 
 
       paypal.Buttons({
@@ -190,8 +191,12 @@
                   status : orderData.status,
                 }),
               })
-//                  .then((response) => response.json())
-//                  .then((data) => console.log(data));
+                 .then((response) => response.json())
+                 .then((data) => {
+                  console.log('success :',data);
+                  console.log('transaction complete');
+                  window.location.href = redirected_url + '?order_number=' + data.order_number + '&payment_id=' + data.transactionID;
+                 });
 
             }
 
