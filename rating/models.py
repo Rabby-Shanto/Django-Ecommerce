@@ -1,7 +1,6 @@
-from email.policy import default
-from tabnanny import verbose
+
 from django.db import models
-from store.models import Product
+from store.models import *
 from User.models import UserAcc
 
 # Create your models here.

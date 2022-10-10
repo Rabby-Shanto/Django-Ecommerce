@@ -1,12 +1,15 @@
 from itertools import product
 from django.shortcuts import render,get_object_or_404
 from cart.models import Cart_item
+from rating.models import ReviewRating
 from .models import Product
 from category.models import Category
 from cart.views import _cart_id
 from django.http import HttpResponse
 from django.core.paginator import EmptyPage,PageNotAnInteger,Paginator
 from django.db.models import Q
+from order.models import OrderedProduct
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def store(request, category_slug=None):
@@ -44,6 +47,24 @@ def product_detail(request,category_slug,product_slug):
 
     except Exception as e:
         raise e
+
+    if request.user.is_authenticated:
+
+        try:
+            ordered_product = OrderedProduct.objects.filter(user=request.user,product_id=single_product.id).exists()
+
+        except OrderedProduct.DoesNotExist:
+            ordered_product = None
+
+
+        # get thee review from database
+
+        reviews = ReviewRating.objects.filter(product_id=single_product.id,status=True)
+
+        context = {'single_product': single_product,'in_cart':in_cart,'ordered_product':ordered_product,'reviews':reviews}
+        return render(request,'store/product_detail.html',context)
+
+
     context = {'single_product': single_product,'in_cart':in_cart}
     return render(request,'store/product_detail.html',context)
 
