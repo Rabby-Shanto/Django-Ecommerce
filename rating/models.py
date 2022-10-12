@@ -1,6 +1,6 @@
 
 from django.db import models
-from store.models import *
+from store.models import Product
 from User.models import UserAcc
 
 # Create your models here.
@@ -19,6 +19,8 @@ class ReviewRating(models.Model):
     class Meta: 
 
         verbose_name_plural = 'Reviews'
+
+
 
     def __str__(self):
         return self.subject

@@ -22,7 +22,18 @@
         {% csrf_token %}
         <article class="content-body">
         
-        <h2 class="title">{{single_product.product_name}}</h2>
+        <h2 class="title">{{single_product.product_name}}</h2> 
+
+        <div >
+            <span class="customer-rating">
+                <i class="fa fa-star{% if avg < 0.5 %}-o{% elif avg >= 0.5 and avg < 1 %}-half-o{% endif %}" aria-hidden="true"></i>
+                <i class="fa fa-star{% if avg < 1.5 %}-o{% elif avg >= 1.5 and avg < 2 %}-half-o{% endif %}" aria-hidden="true"></i>
+                <i class="fa fa-star{% if avg < 2.5 %}-o{% elif avg >= 2.5 and avg < 3 %}-half-o{% endif %}" aria-hidden="true"></i>
+                <i class="fa fa-star{% if avg < 3.5 %}-o{% elif avg >= 3.5 and avg < 4 %}-half-o{% endif %}" aria-hidden="true"></i>
+                <i class="fa fa-star{% if avg < 4.5 %}-o{% elif avg >= 4.5 and avg < 5 %}-half-o{% endif %}" aria-hidden="true"></i>
+                
+            </span><span>{{count}} reviews</span>
+        </div>
         
         <div class="mb-3"> 
             <var class="price h4">TK. {{single_product.price}}</var> 
@@ -137,7 +148,17 @@
         </form>
 
         <header class="section-heading">
-            <h3>Customer Reviews </h3>  
+            <h3>Customer Reviews </h3>
+
+            <div>
+                <span class="customer-rating mt-2">
+                    <i class="fa fa-star{% if avg < 0.5 %}-o{% elif avg >= 0.5 and avg < 1 %}-half-o{% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if avg < 1.5 %}-o{% elif avg >= 1.5 and avg < 2 %}-half-o{% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if avg < 2.5 %}-o{% elif avg >= 2.5 and avg < 3 %}-half-o{% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if avg < 3.5 %}-o{% elif avg >= 3.5 and avg < 4 %}-half-o{% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if avg < 4.5 %}-o{% elif avg >= 4.5 and avg < 5 %}-half-o{% endif %}" aria-hidden="true"></i>
+                </span><span>{{count}} reviews</span>
+            </div>
             
         </header>
     {% for review in reviews %}
@@ -147,6 +168,7 @@
                 <div class="text">
                     <span class="date text-muted float-md-right">{{review.created_at}} </span>  
                     <b class="mb-1">{{review.user.full_name}} </b>
+                    
 
                     <div class="customer-rating mt-2">
                         <span>
@@ -163,6 +185,8 @@
             <div class="mt-3">
 
                 <h4>{{review.subject}}</h4>
+
+                
                 <br>
                 <p>
                     {{review.review}}

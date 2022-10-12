@@ -10,6 +10,7 @@ from django.core.paginator import EmptyPage,PageNotAnInteger,Paginator
 from django.db.models import Q
 from order.models import OrderedProduct
 from django.contrib.auth.decorators import login_required
+from django.db.models import Avg,Count
 
 # Create your views here.
 def store(request, category_slug=None):
@@ -56,16 +57,29 @@ def product_detail(request,category_slug,product_slug):
         except OrderedProduct.DoesNotExist:
             ordered_product = None
 
+    else:
+        ordered_product = None
+    
+    # get thee review from database
 
-        # get thee review from database
-
-        reviews = ReviewRating.objects.filter(product_id=single_product.id,status=True)
-
-        context = {'single_product': single_product,'in_cart':in_cart,'ordered_product':ordered_product,'reviews':reviews}
-        return render(request,'store/product_detail.html',context)
+    reviews = ReviewRating.objects.filter(product_id=single_product.id,status=True)
 
 
-    context = {'single_product': single_product,'in_cart':in_cart}
+    #getting average rating of a product
+    rating = ReviewRating.objects.filter(product=single_product,status=True).aggregate(average=Avg('rating'))
+    avg = 0
+    if rating['average'] is not None:
+        avg = float(rating['average'])
+
+    #counting reviews
+    ratingCount = ReviewRating.objects.filter(product=single_product,status=True).aggregate(count=Count('id'))
+    count = 0
+    if ratingCount['count'] is not None:
+        count = int(ratingCount['count'])
+
+
+
+    context = {'single_product': single_product,'in_cart':in_cart,'ordered_product':ordered_product,'reviews':reviews,'avg': avg,'count':count}
     return render(request,'store/product_detail.html',context)
 
 
