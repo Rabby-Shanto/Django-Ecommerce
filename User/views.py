@@ -1,3 +1,4 @@
+from multiprocessing import context
 from sqlite3 import paramstyle
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
@@ -18,7 +19,7 @@ from django.core.mail import EmailMessage
 from cart.views import _cart_id
 import requests
 # Create your views here.
-
+from order.models import Order
 #Registreation and Sending Email verification to user email
 
 def register(request):
@@ -175,7 +176,12 @@ def activate(request,uidb64,token):
 
 def dashboard(request):
 
-    return render(request,'accounts/dashboard.html')
+    orders = Order.objects.order_by('created_at').filter(user_id = request.user.id,is_ordered=True)
+    orders_count = orders.count()
+    context = {
+        'orders_count' : orders_count,
+    }
+    return render(request,'accounts/dashboard.html',context)
 
 # Forget password
 
@@ -260,3 +266,12 @@ def reset_password(request):
     else:
 
         return render(request,'accounts/reset_password.html')
+
+
+
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user,is_ordered=True).order_by('-created_at')
+    context ={
+        'orders' : orders
+    }
+    return render(request,'accounts/my_order.html',context)
